@@ -7,6 +7,10 @@ var fs = require('fs');
 var path = require('path');
 var mime = require('mime');
 var cache = {};
+//加载定制的Node模块，用来处理基于Socket.IO的服务端聊天功能。
+var chatServer = require('./lib/chat_server');
+chatServer.listen(server);
+
 //辅助函数，提供静态HTTP文件服务。
 function send404(response){
     response.writeHead(404,{'Content-Type': 'text/plain'});
