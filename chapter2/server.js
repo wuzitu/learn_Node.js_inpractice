@@ -2,14 +2,13 @@
  *
  * Created by wulei on 16-9-20.
  */
+
 var http = require('http');
 var fs = require('fs');
 var path = require('path');
 var mime = require('mime');
 var cache = {};
-//加载定制的Node模块，用来处理基于Socket.IO的服务端聊天功能。
-var chatServer = require('./lib/chat_server');
-chatServer.listen(server);
+
 
 //辅助函数，提供静态HTTP文件服务。
 function send404(response){
@@ -63,9 +62,9 @@ var server = http.createServer(function(request,response){
 server.listen(3000,function(){
     console.log("server listening on 3000~");
 });
-
-
-
+//加载定制的Node模块，用来处理基于Socket.IO的服务端聊天功能。
+var chatServer = require('./lib/chat_server');
+chatServer.listen(server);
 
 
 

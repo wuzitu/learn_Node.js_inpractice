@@ -2,6 +2,7 @@
  *
  * Created by wulei on 16-9-21.
  */
+
 var socketio = require('socket.io');
 var io;
 var guestNumber = 1;
@@ -17,7 +18,7 @@ exports.listen = function(server){
     io.sockets.on('connection',function(socket){
         //用户连接上来时赋予一个访客名。
         guestNumber = assignGuestName(socket, guestNumber,nickNames, namesUsed);
-        joinRoom(sockte, 'Lobby');
+        joinRoom(socket, 'Lobby');
         //处理用户消息，更名，聊天室创建与变更。
         handleMessageBroadcasting(socket, nickNames);
         handleNameChangeAttempts(socket, nickNames, namesUsed);
