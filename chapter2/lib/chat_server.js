@@ -82,7 +82,7 @@ function handleNameChangeAttempts(socket, nickNames, namesUsed){
                 namesUsed.push(name);
                 nickNames[socket.id] = name;
                 //删掉之前用的昵称。
-                delete namesUsed[previousNameIndex]；
+                delete namesUsed[previousNameIndex];
                 socket.emit('nameResult',{
                     success: true,
                     name: name
@@ -122,7 +122,7 @@ function handleClientDisconnection(socket){
         var nameIndex = namesUsed.indexOf(nickNames[socked.id]);
         delete namesUsed[nameIndex];
         delete nickNames[socket.id];
-    })
+    });
 }
 
 
