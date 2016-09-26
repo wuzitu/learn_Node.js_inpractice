@@ -18,6 +18,7 @@ exports.listen = function(server){
     io.sockets.on('connection',function(socket){
         //用户连接上来时赋予一个访客名。
         guestNumber = assignGuestName(socket, guestNumber,nickNames, namesUsed);
+        console.log(guestNumber);
         joinRoom(socket, 'Lobby');
         //处理用户消息，更名，聊天室创建与变更。
         handleMessageBroadcasting(socket, nickNames);
@@ -42,18 +43,22 @@ function assignGuestName(socket, guestNumber, nickNames, namesUsed){
     });
     namesUsed.push(name);
     return guestNumber + 1;
+    debugger;
 }
 //进入聊天室
-function joinRoom(socket, room){
+function joinRoom(socket,room){
     socket.join(room);
     currentRoom[socket.id] = room;
+    debugger;
     socket.emit('joinResult', {room: room});
     socket.broadcast.to(room).emit('message',{
         text: nickNames[socket.id] + ' has joined ' + room + '.'
     });
     //确定哪些用户在房间里
     var usersInRoom = io.sockets.clients(room);
-    if(usersInroom.length>1){
+    // console.log(usersInRoom);
+    debugger;
+    if(usersInRoom.length>1){
         var userSocketId = usersInRoom[index].id;
         if(userSocketId != socket.id){
             if(index > 0){
@@ -120,7 +125,7 @@ function handleRoomJoining(socket){
 //用户断开连接
 function handleClientDisconnection(socket){
     socket.on('disconnect', function(){
-        var nameIndex = namesUsed.indexOf(nickNames[socked.id]);
+        var nameIndex = namesUsed.indexOf(nickNames[socket.id]);
         delete namesUsed[nameIndex];
         delete nickNames[socket.id];
     });
