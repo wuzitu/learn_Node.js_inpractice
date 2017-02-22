@@ -1,7 +1,12 @@
 
 $(document).ready(function(){
     var oTable = new TableInit();
-    $("#btn_add").on("click", addColum);
+    // $("#btn_add").on("click", addColum);
+    $("#Contacts_add_d").on("click", function(){
+        $("#contact_d").append('<br/><input type="text" class="form-control contact_text" placeholder="Contacts">');
+        $(".contact_text").last().focus();
+    })
+    $("#btn_delete").on("click", function(){$("#del_alert").show()});
 });
 
 var TableInit  = function(){
@@ -49,7 +54,7 @@ var TableInit  = function(){
         }, {
             field: 'Leader',
             title: '老大',
-            width: 100
+            width: 200
         }, {
             field: 'Remarks',
             title: '备注'
