@@ -35,15 +35,15 @@ exports.addModule = function(ele,callback) {
     newContact.Module = ele.Module;
     newContact.People = ele.People;
     newContact.Leader = ele.Leader;
+    newContact.ModID = ele.ModID;
     checkRepeatModule();
     function checkRepeatModule(){
         ContactModel.find({ModID : newContact.ModID}, function (err, Modules){
             if (err) {
                 return console.error(err);
             }else if(Modules.length){
-                console.log('already has' + Modules);
-                result = 'already has Module ' + newContact.Module;
-                callback(err, result);
+                console.log('already has' + Modules.Module);
+                callback(err, 'repeat');
             }else{
                 doModuleSave()
             }
@@ -67,23 +67,42 @@ exports.addModule = function(ele,callback) {
 
 exports.addPeople = function(newPeople,callback) {
     var oldValue  = {ModID:newPeople.ModID};
-    var newData = {$set:{People:newPeople.value}};
-    ContactModel.update(oldValue,newData,function(err,result){
+    var newData = {$push:{People:newPeople.value}};
+    ContactModel.find(newData.$push, function (err, PeopleDB){
+        if (err) {
+            return console.error(err);
+        }else if(PeopleDB.length){
+            console.log('already has' + PeopleDB);
+            callback(err, 'repeat');
+        }else{
+            doAddpeople();
+        }
+    });
+    function doAddpeople(){
+        ContactModel.update(oldValue,newData,function(err,result){
+            if(err){
+                console.log(err);
+                callback(err);
+            }else{
+                console.log("update");
+                callback(err, "OK");
+            }
+        });
+    }
+    
+}
+
+exports.delModule = function(row, callback){
+    ContactModel.remove(row, function(err, result){
         if(err){
             console.log(err);
+            callback(err,false);
+        }else if(result.result.n == 0){
+            callback(err,false);
         }else{
-            console.log("update");
+            console.log("delOK");
+            callback(err,true);
         }
     });
 }
 
-
-// exports.delete = function (req, res, next) {
-//     var id = req.params.id;
-//     db.delete(id, function (err) {
-//         if (err) {
-//             return next(err);
-//         }
-//         res.redirect('/');
-//     });
-// };

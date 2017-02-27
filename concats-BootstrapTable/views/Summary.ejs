@@ -2,6 +2,15 @@
 <button type="button" class="btn btn-sm btn-success" id="Add_btn">添加模块</button>
 </div>-->
 <div class="main_content">
+    <div id="headMessage">
+        <div class="alert alert-success  alert-dismissible fade in" role="alert" id="OPsuccess">
+            <span>操作</span><strong>成功</strong><span class=".result"></span>
+        </div>
+    </div>
+    <div class="alert alert-danger  alert-dismissible fade in" role="alert" id="OPfailed">
+        <span>操作</span><strong>失败</strong><span class=".result"></span>
+    </div>
+
     <div id="toolbar" class="btn-group">
         <button id="btn_add" type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#Module_add_dialog">
             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增模块

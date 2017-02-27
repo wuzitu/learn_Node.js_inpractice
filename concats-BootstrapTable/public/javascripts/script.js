@@ -8,7 +8,7 @@ $(document).ready(function(){
         }
         $(".contact_text").last().focus();
     })
-    $("#btn_delete").on("click", function(){$("#del_alert").show()});
+    $("#btn_delete").on("click", delRow);
 
     $("#form_data").on("submit", function(evt){
         evt.preventDefault();
@@ -33,32 +33,18 @@ $(document).ready(function(){
         if(count == aModID.length+1)
         oData = oData + "&ModID=" + count;
         $.ajax({
-            url: action,
+            url: "action",
             type: 'POST',
             data: oData,
             success: function(data){
                 $('#Module_add_dialog').modal('hide');
-                for(var i in data){
-                    $('#contacts').bootstrapTable('append',data[i]);
-                }
+                $("#OPsuccess").removeClass("hide");
             },
             error: function(){
             $container.html('There was a problem.');
             }
         });
     })
-
-    // $('body').click(function (event) {
-    //         var target = $(event.target);       // 判断自己当前点击的内容
-    //         if (!target.hasClass('popover')
-    //                 && !target.hasClass('pop')
-    //                 && !target.hasClass('popover-content')
-    //                 && !target.hasClass('popover-title')
-    //                 && !target.hasClass('arrow')
-    //                 && !target.hasClass('btn')) {
-    //             $('.popover').popover('hide');      // 当点击body的非弹出框相关的内容的时候，关闭所有popover
-    //         }
-    //     });
 
 });
 
@@ -106,7 +92,6 @@ var TableInit  = function(){
             field: 'People',
             title: '负责人',
             formatter: function(value,row,index){
-                // var btn = '<button type="button" class="btn btn-default btn_add" data-container="body" data-toggle="popover" data-placement="top"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>';
                 var addPeople = '<a href="#" class="addPeople" data-Module=></a>'
                 content = '<span>'+value+'</span>';
                 return addPeople + " " + content;
@@ -168,6 +153,22 @@ function initDetail(e,args){
 }
 function getColumnInfo(){
     var value = $(this).serialize();
+}
+function delRow(){
+    var row = $('#contacts').bootstrapTable('getSelections')[0];
+    $.ajax({
+        url: "/delModule",
+        type: 'POST',
+        data: {ModID:row.ModID},
+        success: function(data){
+            if(data.result){
+                alert("1")
+            }else{
+                alert("2")
+            }
+            
+        }
+    });
 }
 
 function closePopover(ele){
