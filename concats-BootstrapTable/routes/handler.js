@@ -23,14 +23,16 @@ router.post('/addModule', function(req, res){
             if (err) {
                 return err;
             }else if(Object.prototype.toString.call(result) === "[object String]"){//result is String
-            res.writeHead(200, {"Content-Type": "Text"});
-            res.end(result);
-            }else if(result){//save success
-            res.writeHead(200, {"Content-Type": "application/json"});
-            res.end(JSON.stringify([newContact]));
+                res.writeHead(200, {"Content-Type": "Text"});
+                res.end('repeat');
+            }else if(result){//save success：result=true
+                res.writeHead(200, {"Content-Type": "Text"});
+                res.end("ok");
+                // res.render('index', { title: '弹窗提交成功。' });
+                //JSON.stringify([newContact])
             }else{//save failed
-            res.writeHead(200, {"Content-Type": "Text"});
-            res.end("addModule failed");
+                res.writeHead(200, {"Content-Type": "Text"});
+                res.end("addModule failed");
             }
         });
     }
@@ -49,10 +51,8 @@ router.post('/addPeople', function(req, res, next){
         res.writeHead(200, {"Content-Type": "Text"});
         if(result = "repeat"){
             res.end(result);
-            res.render('index',{result:'重复添加'});
         }else{
-            res.end(result);
-            res.render('index',{result:'完成添加'});
+            res.end('ok');
         }
             
         });
@@ -61,7 +61,7 @@ router.post('/addPeople', function(req, res, next){
 
 router.get('/delModule', function(req, res, next){
     // res.writeHead(200, {"Content-Type": "application/json"});
-    res.render('index', { title: 'addPeople' });
+    res.render('index', { title: 'Contacts' });
 });
 router.post('/delModule', function(req, res, next){
     var Row = req.body;
@@ -73,6 +73,27 @@ router.post('/delModule', function(req, res, next){
                 res.end(JSON.stringify({"result":result}));
         });
     }
+});
+
+router.get('/contacts', function(req, res, next){
+    res.render('index', { title: 'Contacts' });
+});
+router.post('/contacts',function(req, res, next){
+    var Row = req.body;
+    if (Object.keys(Row).length == 0) {
+        return res.render('error');
+    }else{
+        db.loadAll(Row, function(err, result){
+            if(Object.prototype.toString.call(result) === "[object String]"){//result is String
+                res.writeHead(200, {"Content-Type": "Text"});
+                res.end(result);
+            }else{
+                res.writeHead(200, {"Content-Type": "application/json"});
+                res.end(JSON.stringify(result));
+            }
+            
+            });
+        }
 });
 
 module.exports = router;

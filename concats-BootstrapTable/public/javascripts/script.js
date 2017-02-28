@@ -4,53 +4,20 @@ $(document).ready(function(){
     // $("#btn_add").on("click", addColum);
     $("#Contacts_add_d").on("click", function(){
         if($(".contact_text").length < 8){
-            $("#contact_d").append('<br/><div class="col-sm-3"></div><div class="col-sm-9"><input type="text" class="form-control contact_text" placeholder="Contacts" name="People"></div>');
+            $("#contact_d").append('<br/><div class="col-sm-3" class="more_people"></div><div class="col-sm-9" class="more_people"><input type="text" class="form-control contact_text" placeholder="Contacts" name="People"></div>');
         }
         $(".contact_text").last().focus();
-    })
+    });
+
     $("#btn_delete").on("click", delRow);
 
-    $("#form_data").on("submit", function(evt){
-        evt.preventDefault();
-        var action = $(this).attr('action');
-        var $container = $("#btn_edit");
-        var oData = $(this).serialize();
-        var tableData = $('#contacts').bootstrapTable('getData');
-        var aModID = [];
-        var count = "1";
-        for(i=0; i<tableData.length; i++){
-            aModID.push(tableData[i].ModID);
-        }
-        for(i=0; i<aModID.sort().length; i++){
-            if(aModID[i] == count){
-                count++;
-                continue;
-            }else{
-                oData.ModID = count;
-                break;
-            }
-        }
-        if(count == aModID.length+1)
-        oData = oData + "&ModID=" + count;
-        $.ajax({
-            url: "action",
-            type: 'POST',
-            data: oData,
-            success: function(data){
-                $('#Module_add_dialog').modal('hide');
-                $("#OPsuccess").removeClass("hide");
-            },
-            error: function(){
-            $container.html('There was a problem.');
-            }
-        });
-    })
+    $("#form_data").on("submit", submitDlg);
 
 });
 
 var TableInit  = function(){
     $('#contacts').bootstrapTable({
-        url: '/contacts/Table',         //请求后台的URL（*）
+        url: '/contacts',         //请求后台的URL（*）
         method: 'post',                      //请求方式（*）
         toolbar: '#toolbar',                //工具按钮用哪个容器
         striped: true,                      //是否显示行间隔色
@@ -161,20 +128,88 @@ function delRow(){
         type: 'POST',
         data: {ModID:row.ModID},
         success: function(data){
-            if(data.result){
-                alert("1")
+            if(data.result){//del success
+                toastr.info("删除成功ヾ(≧O≦)〃！");
+                $('#contacts').bootstrapTable("refresh");
             }else{
-                alert("2")
+                toastr.error("删除失败ヾ(≧O≦)〃！");
+                $('#contacts').bootstrapTable("refresh");
             }
             
         }
     });
 }
 
-function closePopover(ele){
-$(this).popover("toggle");
-}
+
 
 function addPeopleSuccess(){
-
+    toastr.success("添加成功(＾－＾)V！");
+    $('#contacts').bootstrapTable("refresh");
 }
+//form 转换json
+$.fn.serializeJson = function () {
+    var resultJson = {};
+    var array = this.serializeArray();
+    $(array).each(function () {
+        resultJson[this.name]=this.value;
+    });
+    return resultJson;
+};
+function submitDlg(evt){
+    evt.preventDefault();
+    var action = $(this).attr('action');
+    var $container = $("#btn_edit");
+    var oData = $(this).serializeJson();
+    var tableData = $('#contacts').bootstrapTable('getData');
+    var oModID = {};
+    var count = "1";
+    //init ModID
+    oData.ModID = "1";
+    for(i=0; i<tableData.length; i++){
+        oModID[tableData[i].ModID] = true;
+    }
+    for(i=0; i<256; i++){
+        if(!oModID[i]){
+            oData.ModID = i;
+            break;
+        }
+    }
+    if(i == 256)
+    oData.ModID = i;
+    
+    $.ajax({
+        url: action,
+        type: 'POST',
+        data: oData,
+        success: function(data){
+            $('#Module_add_dialog').modal('hide');//关闭弹窗
+            switch(data){
+                case "repeat":
+                    toastr.warning("啊哦，你提交了重复的膜块！");  
+                    break;
+                case "empty":
+                    toastr.warning("亲，表格要填满哦^_^");  
+                    break;
+                case "addModule failed":
+                    toastr.error("啊哦，存储失败啦T.T");  
+                    break;
+                case "ok":
+                    toastr.success("提交成功(＾－＾)V！");
+                    $('#contacts').bootstrapTable("refresh");
+                    break;    
+                default:
+                    toastr.info("不知道发生了什么......");
+            };
+            initDlgForm();
+        },
+        error: function(){
+        $container.html('There was a problem.');
+        }
+    });
+}
+//初始化模态框
+function initDlgForm(){
+    $("#form_data").find("input").val("");
+    $(".more_people").remove();
+}
+    

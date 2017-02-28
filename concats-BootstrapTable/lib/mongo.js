@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var moment = require('moment')
 // mongoose.connect('mongodb://localhost:27017/test');
 mongoose.Promise = global.Promise;
 var dburl = 'localhost:27017/test';
@@ -16,13 +17,13 @@ exports.connect = function(callback) {
 exports.disconnect = function(callback) {
     mongoose.disconnect(callback);
 }
-
+// var timeNow = moment().format('L');
 var ContactSchema = mongoose.Schema({
     ModID: String,
     Module: [String],
     People: [String],
     Leader: String,
-    UpdateTime:{type:Date,default:Date.now},
+    UpdateTime:{type:String,default:moment().format('YYYY-MM-DD')},
     finished:{type:Boolean, default:false}
 });
 
@@ -38,7 +39,7 @@ exports.addModule = function(ele,callback) {
     newContact.ModID = ele.ModID;
     checkRepeatModule();
     function checkRepeatModule(){
-        ContactModel.find({ModID : newContact.ModID}, function (err, Modules){
+        ContactModel.find({Module : newContact.Module}, function (err, Modules){
             if (err) {
                 return console.error(err);
             }else if(Modules.length){
@@ -106,3 +107,16 @@ exports.delModule = function(row, callback){
     });
 }
 
+exports.loadAll = function(row, callback){
+    ContactModel.find({}, function(err, result){
+        if(err){
+            console.log(err);
+            callback(err,"err");
+        }else if(result.length == 0){
+            callback(err,"empty");
+        }else{
+            console.log("refreshOK");
+            callback(err,result);
+        }
+    });
+}
